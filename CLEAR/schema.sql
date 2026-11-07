@@ -1,0 +1,3 @@
+-- CLEAR database schema.
+-- The application creates these tables automatically on first run.
+-- Product fields intentionally start blank except for one fictional demo record.
