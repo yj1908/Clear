@@ -1,0 +1,7 @@
+-- CLEAR database schema.
+-- The application creates and safely migrates the tables in database.py.
+-- Product image filenames are stored in products.image_filename and point to static/images/.
+-- Multi-profile: profiles(id, name, ...); inventory.profile_id and saved_products.profile_id scope data to a profile.
+-- Databases from the single-profile version are migrated automatically on startup (see migrate_to_profiles).
+-- Added: profiles.sensitivities/skin_concerns/routine_notes; inventory.product_id/ingredients/price/size/opened_on/pao_months; products.pao_months.
+-- New tables: routine_items, usage_log, journal_entries (photos live in instance/uploads/). All created/migrated non-destructively in database.py.

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f0e8">
+  <title>CLEAR — Skincare, made clearer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='images/header_background.jpg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="wordmark" href="#" data-page="home">clear<span>.</span></a>
+    <div class="topbar-right">
+      <span class="topline">SKINCARE, MADE CLEARER</span>
+      <div class="profile-wrap">
+        <button class="profile-chip" id="profileButton" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Switch profile">
+          <span class="avatar" id="chipAvatar" aria-hidden="true"></span>
+          <span class="profile-chip-name" id="chipName"></span>
+          <span class="chip-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="dropdown profile-dropdown hidden" id="profileDropdown"></div>
+      </div>
+      <div class="menu-wrap">
+        <button class="icon-button" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
+        <div class="dropdown hidden" id="menuDropdown">
+          <button data-modal="settingsModal">Settings <span>↗</span></button>
+          <button data-modal="feedbackModal">Product request & feedback <span>↗</span></button>
+          <button data-modal="customiseModal">App customisation <span>↗</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="homePage" class="page active">
+      <div class="welcome-row">
+        <div class="welcome-copy">
+          <p class="eyebrow">A MORE THOUGHTFUL ROUTINE</p>
+          <h1 id="homeGreeting">Hey there,<br><em>let's get clear.</em> ✦</h1>
+          <p class="muted">Understand what goes on your skin — and why.</p>
+        </div>
+        <div class="round-mark">C<span>✳</span></div>
+      </div>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow light">LESS GUESSWORK. MORE CLARITY.</p>
+          <h2>Your skin.<br>Better informed.</h2>
+          <p>Explore ingredients, examine claims and make more informed skincare decisions.</p>
+          <button class="pill-button light-button" data-page="explore">Explore skincare <span>→</span></button>
+        </div>
+      </section>
+
+      <div id="homeReminders"></div>
+
+      <div class="section-heading">
+        <div><p class="eyebrow">BROWSE BY TYPE</p><h2>Explore categories</h2></div>
+        <button class="text-link" data-page="explore">View all →</button>
+      </div>
+      <div class="category-grid" id="homeCategories"></div>
+
+      <section class="profile-strip">
+        <div class="profile-icon">◌</div>
+        <div class="profile-summary">
+          <p class="eyebrow" id="homeProfileEyebrow">YOUR SKIN PROFILE</p>
+          <h3 id="homeSkinType">Not set up yet</h3>
+          <p class="muted" id="homeProfileMeta">Add your skin details to personalise your comparisons.</p>
+        </div>
+        <button class="circle-arrow" data-page="profile">→</button>
+      </section>
+
+      <div class="section-heading tips-heading">
+        <div><p class="eyebrow">A LITTLE KNOWLEDGE GOES A LONG WAY</p><h2>Skincare notes</h2></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-symbol">✧</div>
+        <div><h3>Keep your routine intentional.</h3><p>More products do not automatically mean better results. Start with what your skin needs.</p></div>
+      </div>
+    </section>
+
+    <section id="explorePage" class="page">
+      <div class="page-intro">
+        <p class="eyebrow">THE PRODUCT LIBRARY</p>
+        <h1>Explore <em>skincare.</em></h1>
+        <p class="muted">Browse the product library, preview each product, and add the ones you own to your skincare shelf.</p>
+      </div>
+      <div class="search-row"><span>⌕</span><input id="searchInput" placeholder="Search products or brands..." autocomplete="off"></div>
+      <div class="filter-row" id="categoryFilters"></div>
+      <p class="helper compare-hint">Tip: long-press or right-click a product to start comparing it with another.</p>
+      <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <section id="addPage" class="page">
+      <div class="page-intro">
+        <p class="eyebrow">YOUR SKIN, DAY TO DAY</p>
+        <h1>My <em>skin.</em></h1>
+        <p class="muted">Your shelf, routine, product expiry dates and skin journal for the active profile.</p>
+      </div>
+      <div class="tab-row" role="tablist" id="skinTabs">
+        <button class="tab active" role="tab" data-tab="shelf">Shelf</button>
+        <button class="tab" role="tab" data-tab="routine">Routine</button>
+        <button class="tab" role="tab" data-tab="expiry">Expiry <span class="tab-badge hidden" id="expiryBadge"></span></button>
+        <button class="tab" role="tab" data-tab="journal">Journal</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-shelf">
+        <form id="inventoryForm" class="form-card">
+          <label>Product name<input name="product_name" required placeholder="e.g. Daily Hydrating Cleanser"></label>
+          <label>Brand <input name="brand" placeholder="Brand name"></label>
+          <label>Category
+            <select name="category"><option value="">Select a category</option><option>Cleanser</option><option>Toner</option><option>Serum</option><option>Moisturiser</option><option>Sunscreen</option></select>
+          </label>
+          <details class="more-details">
+            <summary>Optional details (ingredients, price, size, opened date)</summary>
+            <label>Ingredient list <textarea name="ingredients" rows="3" placeholder="Paste the ingredient list from the packaging, separated by commas. Needed for allergy checks and the ingredient breakdown."></textarea></label>
+            <div class="two-col">
+              <label>Price<input name="price" placeholder="e.g. S$22"></label>
+              <label>Size<input name="size" placeholder="e.g. 150 ml"></label>
+            </div>
+            <div class="two-col">
+              <label>Date opened<input type="date" name="opened_on"></label>
+              <label>Period after opening (months)<input type="number" name="pao_months" min="1" max="60" placeholder="e.g. 12"></label>
+            </div>
+          </details>
+          <label>Notes (optional)<textarea name="notes" rows="2" placeholder="Any notes?"></textarea></label>
+          <button class="primary-button" type="submit">Add to my skincare <span>→</span></button>
+        </form>
+        <div class="section-heading compact"><div><p class="eyebrow">WHAT YOU OWN</p><h2>My skincare</h2></div></div>
+        <div id="inventoryList" class="inventory-list"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-routine">
+        <p class="muted small panel-intro">Arrange the products on your shelf into morning, evening and weekly routines, and note how often you use each one.</p>
+        <div id="routineBoard" class="routine-board"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-expiry">
+        <p class="muted small panel-intro">Record when you opened a product and the period-after-opening (the open-jar symbol on the pack, e.g. 12M). CLEAR flags products that are close to, or past, that period. It is a guide, not a safety guarantee: discard anything that looks, smells or feels different.</p>
+        <div id="expiryList" class="inventory-list"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-journal">
+        <form id="journalForm" class="form-card">
+          <div class="form-heading"><h2>Add an entry</h2><span class="soft-tag">PRIVATE TO THIS APP</span></div>
+          <label>Date<input type="date" name="entry_date" required></label>
+          <fieldset class="field-group">
+            <legend>How does your skin feel overall?</legend>
+            <div class="comfort-row" id="comfortRow"></div>
+          </fieldset>
+          <fieldset class="field-group">
+            <legend>Anything you notice? (optional)</legend>
+            <div class="chip-row" id="journalTags"></div>
+          </fieldset>
+          <label>Notes<textarea name="notes" rows="3" placeholder="e.g. Skin feels more comfortable since I changed my moisturiser."></textarea></label>
+          <label>Photo (optional)<input type="file" name="photo" accept="image/jpeg,image/png,image/webp"></label>
+          <p class="helper">Photos stay in this app's local storage on your computer. Use similar lighting each time if you want to compare.</p>
+          <button class="primary-button" type="submit">Save entry <span>→</span></button>
+        </form>
+        <div class="section-heading compact"><div><p class="eyebrow">OVER TIME</p><h2>Progress journal</h2></div></div>
+        <div id="journalTrend"></div>
+        <div id="journalList" class="journal-list"></div>
+      </div>
+    </section>
+
+    <section id="savedPage" class="page">
+      <div class="page-intro"><p class="eyebrow">YOUR SHORTLIST</p><h1>Saved <em>for later.</em></h1><p class="muted">Products you want to revisit.</p></div>
+      <div id="savedGrid" class="product-grid"></div>
+    </section>
+
+    <section id="profilePage" class="page">
+      <div class="page-intro"><p class="eyebrow">YOUR SKIN, YOUR CONTEXT</p><h1>Skin <em>profile.</em></h1><p class="muted">Each profile has its own skin details, shelf and saved list, so family or friends can share one app.</p></div>
+
+      <section class="form-card profile-card">
+        <div class="form-heading"><h2>Profiles</h2><span class="soft-tag" id="profileCount"></span></div>
+        <div class="profile-list" id="profileList"></div>
+        <button type="button" class="outline-button" id="addProfileButton" data-modal="newProfileModal">＋ Add a profile</button>
+      </section>
+
+      <form id="profileForm" class="form-card">
+        <div class="form-heading"><h2 id="profileFormTitle">Skin details</h2><span class="soft-tag">SAVED ON THIS COMPUTER</span></div>
+        <label>Profile name<input name="name" id="profileNameInput" required maxlength="30" autocomplete="off" placeholder="e.g. Mum, Sam"></label>
+        <label>Skin type
+          <select name="skin_type" id="skinTypeSelect">
+            <option value="">Not sure yet</option><option>Dry</option><option>Oily</option><option>Combination</option><option>Normal</option><option>Sensitive</option>
+          </select>
+        </label>
+        <p class="helper">Not sure about your skin type? Take the short quiz below.</p>
+        <button type="button" class="outline-button" id="openQuiz">Take skin type quiz →</button>
+
+        <fieldset class="field-group">
+          <legend>Skin sensitivities</legend>
+          <p class="helper">Things that tend to irritate you. These produce general irritation notes, which are different from allergy matches.</p>
+          <div class="chip-row" id="sensitivityChips"></div>
+          <input name="sensitivities_extra" id="sensitivitiesExtra" placeholder="Anything else? e.g. heat, hard water" maxlength="150">
+        </fieldset>
+
+        <label>Known ingredient allergies
+          <textarea name="allergies" rows="2" placeholder="Ingredient names separated by commas, e.g. fragrance, propolis, lanolin"></textarea>
+        </label>
+        <p class="helper">CLEAR flags a product when one of these appears in its ingredient list. Add specific ingredient names (what appears on the label) for the most reliable matching.</p>
+
+        <fieldset class="field-group">
+          <legend>Skin concerns</legend>
+          <div class="chip-row" id="concernChips"></div>
+          <input name="concerns_extra" id="concernsExtra" placeholder="Anything else?" maxlength="150">
+        </fieldset>
+
+        <label>Skin conditions <textarea name="skin_conditions" rows="2" placeholder="e.g. eczema, rosacea, or leave blank."></textarea></label>
+        <label>Current skincare routine <textarea name="routine_notes" rows="3" placeholder="A quick description of what you do now, e.g. gentle cleanser, moisturiser and sunscreen in the morning; cleanse and moisturise at night."></textarea></label>
+        <p class="helper">You can organise actual products into routines in My skin → Routine.</p>
+
+        <p class="disclaimer">This profile is for product-awareness purposes, not diagnosis or medical advice. Ingredient lists and formulations can change; always verify the product packaging. If you have a diagnosed allergy or a skin condition, check with a doctor or pharmacist.</p>
+        <button class="primary-button" type="submit">Save skin profile <span>→</span></button>
+        <button class="danger-button hidden" type="button" id="deleteProfileButton">Delete this profile</button>
+      </form>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-page="home"><span>⌂</span>Home</button>
+    <button class="nav-item" data-page="explore"><span>⌕</span>Explore</button>
+    <button class="nav-add" data-page="add" aria-label="Add skincare">＋</button>
+    <button class="nav-item" data-page="saved"><span>♡</span>Saved</button>
+    <button class="nav-item" data-page="profile"><span>♙</span>Profile</button>
+  </nav>
+</div>
+
+<div class="modal-backdrop hidden" id="productModal">
+  <section class="modal product-modal">
+    <button class="modal-close" data-close>×</button>
+    <div id="productDetail"></div>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="quizModal">
+  <section class="modal">
+    <button class="modal-close" data-close>×</button>
+    <p class="eyebrow">A QUICK SELF-CHECK</p><h2>Get to know your <em>skin.</em></h2>
+    <p class="muted small">This is a simple educational guide, not a clinical assessment. Skin can change with weather, hormones and products.</p>
+    <form id="quizForm">
+      <label>After cleansing, how often does your skin feel tight?<select name="tightness" required><option value="sometimes">Sometimes</option><option value="often">Often</option><option value="rarely">Rarely</option></select></label>
+      <label>Where do you notice shine by midday?<select name="shine" required><option value="none">Very little / none</option><option value="t_zone">Mostly forehead, nose and chin</option><option value="all_over">Across most of my face</option></select></label>
+      <label>How often do you experience breakouts?<select name="breakouts" required><option value="rarely">Rarely</option><option value="sometimes">Sometimes</option><option value="often">Often</option></select></label>
+      <label>Does your skin react easily to products or weather?<select name="sensitivity" required><option value="rarely">Rarely</option><option value="sometimes">Sometimes</option><option value="often">Often</option></select></label>
+      <button class="primary-button" type="submit">See my starting point →</button>
+    </form>
+    <p class="result-note" id="quizResult"></p>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="feedbackModal">
+  <section class="modal">
+    <button class="modal-close" data-close>×</button>
+    <p class="eyebrow">HELP GROW THE LIBRARY</p><h2>Request a <em>product.</em></h2>
+    <p class="muted small">Can't find a product? Send a request for it to be considered for the CLEAR library.</p>
+    <form id="feedbackForm">
+      <label>Brand<input name="brand" placeholder="Brand name"></label>
+      <label>Product name<input name="product_name" required placeholder="Full product name"></label>
+      <label>Product link (optional)<input name="product_url" type="url" placeholder="https://..."></label>
+      <label>Anything we should know?<textarea name="message" rows="3" placeholder="Why would you like this product added?"></textarea></label>
+      <button class="primary-button" type="submit">Submit request →</button>
+    </form>
+    <p class="result-note" id="feedbackResult"></p>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="newProfileModal">
+  <section class="modal">
+    <button class="modal-close" data-close aria-label="Close">×</button>
+    <p class="eyebrow">SHARE THE APP</p><h2>Add a <em>profile.</em></h2>
+    <p class="muted small">Each person gets their own skin details, shelf and saved products. You can fill in their skin details next.</p>
+    <form id="newProfileForm">
+      <label>Name<input name="name" required maxlength="30" autocomplete="off" placeholder="e.g. Mum, Sam"></label>
+      <button class="primary-button" type="submit">Create profile →</button>
+    </form>
+    <p class="result-note" id="newProfileResult"></p>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="settingsModal"><section class="modal"><button class="modal-close" data-close>×</button><p class="eyebrow">COMING LATER</p><h2>Settings</h2><p class="muted">Account and privacy settings will be added in a future version.</p></section></div>
+<div class="modal-backdrop hidden" id="customiseModal"><section class="modal"><button class="modal-close" data-close>×</button><p class="eyebrow">COMING LATER</p><h2>Make CLEAR <em>yours.</em></h2><p class="muted">Theme, display and app customisation controls will be added in a future version.</p></section></div>
+
+<div class="modal-backdrop hidden" id="compareModal">
+  <section class="modal compare-modal">
+    <button class="modal-close" data-close aria-label="Close">×</button>
+    <div id="compareBody"></div>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="editProductModal">
+  <section class="modal">
+    <button class="modal-close" data-close aria-label="Close">×</button>
+    <p class="eyebrow">PRODUCT DATA</p><h2 id="editProductTitle">Edit product</h2>
+    <p class="muted small">Copy details from the packaging or the brand's official page. Leave a field blank if you don't know it, rather than guessing.</p>
+    <form id="editProductForm"></form>
+    <p class="result-note" id="editProductResult"></p>
+  </section>
+</div>
+
+<div class="modal-backdrop hidden" id="shelfItemModal">
+  <section class="modal">
+    <button class="modal-close" data-close aria-label="Close">×</button>
+    <p class="eyebrow">ON YOUR SHELF</p><h2 id="shelfItemTitle">Product details</h2>
+    <form id="shelfItemForm"></form>
+    <p class="result-note" id="shelfItemResult"></p>
+  </section>
+</div>
+
+<div class="compare-tray hidden" id="compareTray" role="region" aria-label="Compare products">
+  <span id="compareTrayText"></span>
+  <button type="button" class="pill-button" data-action="compare-run" id="compareRun">Compare</button>
+  <button type="button" class="outline-button" data-action="compare-cancel">Cancel</button>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
